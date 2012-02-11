@@ -10,24 +10,28 @@ from google.appengine.api import urlfetch
 from google.appengine.api import mail
 from google.appengine.api import urlfetch
 
+# A location to monitor
 class Location(db.Model):
 	url = db.StringProperty(multiline=False)
 	allowable_status_code = db.IntegerProperty()
 	is_active = db.BooleanProperty()
 	created_date = db.DateTimeProperty(auto_now_add=True)
 
+# A subscriber to failure event notifications
 class Watcher(db.Model):
 	name = db.StringProperty(multiline=False)
 	email = db.StringProperty(multiline=False)
 	contact_threshold = db.IntegerProperty()
 	is_active = db.BooleanProperty()
 
+# A single failure event
 class FailureEvent(db.Model):
 	references_location = db.ReferenceProperty(Location)
 	received_code = db.IntegerProperty()
 	is_valid = db.BooleanProperty()
 	created_date = db.DateTimeProperty(auto_now_add=True)
 
+# Used to track successive failure events so notification thresholds can be handled easily
 class SuccessiveFailure(db.Model):
 	references_location = db.ReferenceProperty(Location)
 	failure_count = db.IntegerProperty()
@@ -38,6 +42,9 @@ class SuccessiveFailure(db.Model):
 class MainPage(webapp.RequestHandler):
 	def get(self):
 		self.response.out.write('<html><body>Beginning init<br/><br /><ul>')
+
+        #If the DB does not contain an instance of each of the following classes, we create a dummy one and store.
+        #This makes it possible to use the Google DataStore viewer to add/configure additional entries
 
 		location_query = Location.all()
 		locations = location_query.fetch(1)
@@ -94,6 +101,9 @@ class Scan(webapp.RequestHandler):
 		for location in locations:
 			self.response.out.write('url = ' + location.url + '<br />')	
 			try:
+                # I believe there's a bug here because a non-responsive site will end up triggering an exception
+                # Unfortunately, I don't have the code that fixes this available any more and am not actively working
+                # on this project.
 				result = urlfetch.fetch(location.url)
 				if location.allowable_status_code != result.status_code:
 					self.response.out.write('failure: ' + str(result.status_code) + '<br/>')	

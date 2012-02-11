@@ -1,10 +1,12 @@
+#Overview
+
 XTreme-Monitor was a basic project on Google App Engine to support external monitoring of URLs(via HTTP status codes) with configurable alerting thresholds via e-mail.  
 
 We subsequently switched to using Pingdom for monitoring, so this hasn't been modified since 2010.  The code is pretty basic and might be useful for something.
 
-To use:
+#To use:
 
 1. Setup a Google App Engine Account
 2. Update your account with this code
-3. Use the datastore viewer to add new locations and watchers
+3. There is no dedicated admin interface for this tool.  Instead, when it first runs, XTreme-Monitor will create some example entries in the App Engine datastore.  This will allow you to use the datastore viewer to modify locations(URLs to monitor) and watchers(Subscribers to failure alerts).  
 4. That's it!
