@@ -1,0 +1,4 @@
+cron:
+  - description: Minute scan
+    url: /Scan
+    schedule: every 1 minutes
